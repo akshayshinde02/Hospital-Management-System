@@ -5,9 +5,9 @@ import com.patient.model.Patient;
 
 public interface PatientService {
     
-    public Patient createPatientProfile(Patient patient) throws PatientException;
+    public Patient createPatientProfile(Patient patient, String token) throws PatientException;
 
-    public Patient getSinglePatient(long patientId) throws PatientException;
+    public Patient getSinglePatient(long patientId, String token) throws PatientException;
 
     public Patient updatePatient(long patientId, Patient updtProfile) throws PatientException;
 

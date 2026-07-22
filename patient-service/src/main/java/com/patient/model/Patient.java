@@ -42,5 +42,7 @@ public class Patient {
     private List<String> symptoms;
 
     private String contactNumber;
+
+    private Long userId;
     
 }

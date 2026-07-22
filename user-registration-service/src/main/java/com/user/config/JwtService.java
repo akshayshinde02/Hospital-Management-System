@@ -75,7 +75,7 @@ public class JwtService {
         String username = getUsernameFromJwtToken(token);
 
         boolean expValue = Jwts.parserBuilder().setSigningKey(key).build()
-            .parseClaimsJwt(token).getBody().getExpiration()
+            .parseClaimsJws(token).getBody().getExpiration()
             .before(new Date());
         
         return username.equals(user.getUsername()) && !expValue;

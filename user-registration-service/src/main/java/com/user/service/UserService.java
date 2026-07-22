@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.user.dto.AuthResponse;
 import com.user.dto.LoginRequest;
+import com.user.dto.UserDto;
 import com.user.exception.UserException;
 import com.user.model.User;
 
@@ -13,7 +14,7 @@ public interface UserService {
 
     public AuthResponse loginUser(LoginRequest loginRequest) throws UserException;
 
-    public User getSingleUser(long userId) throws UserException;
+    public UserDto getSingleUser(String token) throws UserException;
 
     public List<User> getUsers() throws UserException;
 

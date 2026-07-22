@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -30,22 +31,22 @@ public class PatientController {
     private final PatientService patientService;
 
     @PostMapping("/patients")
-    public ResponseEntity<Patient> addPatient(@RequestBody @Valid Patient patient) throws PatientException{
+    public ResponseEntity<Patient> addPatient(@RequestHeader("Authorization") String token, @RequestBody @Valid Patient patient) throws PatientException{
         
         final String METHOD = "addPatient";
         log.info("Insdie controller{} "+METHOD);
         
-        Patient savedPatient = patientService.createPatientProfile(patient);
+        Patient savedPatient = patientService.createPatientProfile(patient,token);
         return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
     }
 
     @GetMapping("/patients/{patientId}")
-    public ResponseEntity<Patient> getPatient(@PathVariable Long patientId) throws PatientException{
+    public ResponseEntity<Patient> getPatient(@RequestHeader("Authorization") String token, @PathVariable Long patientId) throws PatientException{
 
         final String METHOD = "getPatient";
         log.info("Inside controller "+METHOD);
 
-        Patient patient = patientService.getSinglePatient(patientId);
+        Patient patient = patientService.getSinglePatient(patientId,token);
 
         return new ResponseEntity<>(patient, HttpStatus.OK);
     }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.user.config.JwtService;
 import com.user.dto.AuthResponse;
 import com.user.dto.LoginRequest;
+import com.user.dto.UserDto;
 import com.user.exception.UserException;
 import com.user.model.Role;
 import com.user.model.User;
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
         UserDetails userDetails  = userDetailsService.loadUserByUsername(newUser.getUsername());
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser, null, userDetails.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = jwtService.generateToken(authentication);
@@ -120,25 +121,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getSingleUser(long userId) throws UserException {
+    public UserDto getSingleUser(String token) throws UserException {
 
-        log.info("Fetaching user with id {}", userId);
+        log.info("Fetaching user with token {}");
 
-        if (userId <= 0) {
-            log.error("Invalid user id {}", userId);
-            throw new UserException("User Id must be in positive");
+        if (token == null) {
+            log.error("Invalid user token{}");
+            throw new UserException("Token must be provided");
         }
 
-        Optional<User> user = userRepository.findById(userId);
+        token = token.substring(7);
+        String userName = jwtService.getUsernameFromJwtToken(token);
 
-        if (user.isEmpty()) {
-            log.error("user not found with id {}", userId);
-            throw new UserException("User not found with id");
+        if (userName == null) {
+            log.error("userName not found with id {}", userName);
+            throw new UserException("User not found with Username");
         }
+
+        Optional<User> user = userRepository.findByUsername(userName);
 
         log.info("User fetch successfully");
 
-        return user.get();
+        UserDto userDto = new UserDto();
+        userDto.setUserId(user.get().getUserId());
+        userDto.setUsername(user.get().getUsername());
+        userDto.setRole(user.get().getRole());
+
+        return userDto;
     }
 
     @Override
@@ -166,7 +175,15 @@ public class UserServiceImpl implements UserService {
             throw new UserException("user not present");
         }
 
-        User existingUser = getSingleUser(userId);
+        Optional<User> existing_user = userRepository.findById(userId);
+
+        if (existing_user.isEmpty()) {
+            log.error("user not found with id {}", userId);
+            throw new UserException("User not found with id");
+        }
+
+
+        User existingUser = existing_user.get();
         existingUser.setUsername(user.getUsername());
         existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         existingUser.setUpdated_at(new Date());
