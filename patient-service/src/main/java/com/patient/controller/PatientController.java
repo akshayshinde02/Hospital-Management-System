@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
+
 @Slf4j
 @RestController
 @RequestMapping("/patient")
@@ -30,7 +31,7 @@ public class PatientController {
     
     private final PatientService patientService;
 
-    @PostMapping("/patients")
+    @PostMapping("/create-patient")
     public ResponseEntity<Patient> addPatient(@RequestHeader("Authorization") String token, @RequestBody @Valid Patient patient) throws PatientException{
         
         final String METHOD = "addPatient";
@@ -40,7 +41,7 @@ public class PatientController {
         return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
     }
 
-    @GetMapping("/patients/{patientId}")
+    @GetMapping("/view/{patientId}")
     public ResponseEntity<Patient> getPatient(@RequestHeader("Authorization") String token, @PathVariable Long patientId) throws PatientException{
 
         final String METHOD = "getPatient";
@@ -51,22 +52,33 @@ public class PatientController {
         return new ResponseEntity<>(patient, HttpStatus.OK);
     }
 
-    @DeleteMapping("/patients/{patientId}")
-    public ResponseEntity<String> deletePatient(@PathVariable Long patientId) throws PatientException{
+    @GetMapping("/get/patient")
+    public ResponseEntity<Patient> getPatientByUserId(@RequestHeader("Authorization") String token) throws PatientException{
+        final String METHOD = "getPatientByUserId";
+        log.info("Inside controller "+METHOD);
+
+        Patient patient = patientService.viewPatientByUserId(token);
+
+        return new ResponseEntity<>(patient, HttpStatus.OK);
+    }
+    
+
+    @DeleteMapping("/delete-patient/{patientId}")
+    public ResponseEntity<String> deletePatient(@RequestHeader("Authorization") String token, @PathVariable Long patientId) throws PatientException{
         final String METHOD = "deletePatient";
         log.info("Inside controller ",METHOD);
 
-        patientService.deletePatient(patientId);
+        patientService.deletePatient(token, patientId);
 
         return ResponseEntity.ok("Patient Deleted");
     }
     
-    @PutMapping("/patients/{patientId}")
-    public ResponseEntity<Patient> updatePatient(@PathVariable Long patientId, @RequestBody Patient patient) throws PatientException{
+    @PutMapping("/update-patient/{patientId}")
+    public ResponseEntity<Patient> updatePatient(@RequestHeader("Authorization") String token, @PathVariable Long patientId, @RequestBody Patient patient) throws PatientException{
         final String METHOD = "updatePatient";
         log.info("Inside controller "+METHOD);
 
-        Patient updatedPatient = patientService.updatePatient(patientId,patient);
+        Patient updatedPatient = patientService.updatePatient(token, patientId,patient);
         
         return new ResponseEntity<>(updatedPatient, HttpStatus.OK);
     }

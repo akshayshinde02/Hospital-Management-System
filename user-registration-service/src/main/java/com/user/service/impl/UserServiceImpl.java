@@ -63,7 +63,12 @@ public class UserServiceImpl implements UserService {
         User newUser = new User();
         newUser.setUsername(user.getUsername());
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        newUser.setRole(Role.PATIENT);
+
+        if(user.getRole().equals(Role.PATIENT)){
+            newUser.setRole(Role.PATIENT);
+        }else{
+            newUser.setRole(Role.DOCTOR);
+        }
         newUser.setCreated_at(new Date());
 
         User savedUser = userRepository.save(newUser);

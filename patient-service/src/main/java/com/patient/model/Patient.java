@@ -24,7 +24,7 @@ public class Patient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long patientId;
 
     @NotBlank(message = "name not be null")
     private String name;

@@ -9,7 +9,9 @@ public interface PatientService {
 
     public Patient getSinglePatient(long patientId, String token) throws PatientException;
 
-    public Patient updatePatient(long patientId, Patient updtProfile) throws PatientException;
+    public Patient updatePatient(String token, long patientId, Patient updtProfile) throws PatientException;
 
-    public void deletePatient(long patientId) throws PatientException;
+    public void deletePatient(String token, long patientId) throws PatientException;
+
+    public Patient viewPatientByUserId(String token) throws PatientException;
 }

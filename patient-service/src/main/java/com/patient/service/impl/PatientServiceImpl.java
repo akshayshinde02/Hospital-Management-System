@@ -72,13 +72,23 @@ public class PatientServiceImpl implements PatientService{
     }
 
     @Override
-    public Patient updatePatient(long patientId, Patient updtProfile) throws PatientException {
+    public Patient updatePatient(String token, long patientId, Patient updtProfile) throws PatientException {
 
         final String METHOD = "updatePatient";
 
         log.info("Inside {} "+METHOD);
-       
+
+        UserDto user = client.getUser(token);
+
+        if(!user.getRole().equals("PATIENT")){
+            throw new PatientException("only patient can access profile");
+        }
+
         Patient existingPatient = patientRepository.findById(patientId).orElseThrow(()-> new PatientException("Patient with id not found!"));
+
+        if(!existingPatient.getUserId().equals(user.getUserId())){
+            throw new PatientException("Access Denied");
+        }
 
         existingPatient.setAge(updtProfile.getAge());
         existingPatient.setContactNumber(updtProfile.getContactNumber());
@@ -93,11 +103,37 @@ public class PatientServiceImpl implements PatientService{
     }
 
     @Override
-    public void deletePatient(long patientId) throws PatientException {
-       
+    public void deletePatient(String token, long patientId) throws PatientException {
+
+        UserDto user = client.getUser(token);
+
+        if(!user.getRole().equals("PATIENT")){
+            throw new PatientException("only patient can access profile");
+        }
+
         Patient patient = patientRepository.findById(patientId).orElseThrow(()-> new PatientException("Patient with id not found!"));
 
+        if(!patient.getUserId().equals(user.getUserId())){
+            throw new PatientException("Access Denied");
+        }
+    
+
         patientRepository.delete(patient);
+    }
+
+    @Override
+    public Patient viewPatientByUserId(String token) throws PatientException {
+       
+        log.info("In method {}"+"viewPatientByUserId");
+
+        UserDto user = client.getUser(token);
+
+        if(!user.getRole().equals("PATIENT")){
+            throw new PatientException("only patient can access profile");
+        }
+
+        return patientRepository.findByUserId(user.getUserId()).orElseThrow(()-> new PatientException("Patient not found"));
+
     }
     
 }
