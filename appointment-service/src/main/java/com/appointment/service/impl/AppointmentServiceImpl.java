@@ -101,14 +101,11 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new AppointmentException("token | userId should not be null");
         }
 
-        UserDto userDto = authClient.getUser(token);
+        authClient.getUser(token);
 
         Appointment appointment = repository.findById(appointmentId)
                 .orElseThrow(() -> new AppointmentException("appointment not found with " + appointmentId));
 
-        if (!userDto.getUserId().equals(appointment.getUserId())) {
-            throw new AppointmentException("User not valid");
-        }
 
         return appointment;
 
