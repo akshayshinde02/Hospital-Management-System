@@ -3,6 +3,7 @@ package com.doctor.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.doctor.client.AuthenticationClient;
@@ -141,6 +142,19 @@ public class PhysicianServiceImpl implements PhysicianService{
             throw new DoctorException("No doctor found!");
         }
         return listOfDoctors;
+    }
+
+    @Override
+    public List<Doctor> getDoctors(Pageable pageable, String search) {
+       
+        log.info("inside getDoctor()");
+
+        if(search == null){
+            return repository.findAll(pageable).getContent();
+        } else{
+
+            return repository.findByDoctorName(search,pageable).getContent();
+        }
     }
     
 }
