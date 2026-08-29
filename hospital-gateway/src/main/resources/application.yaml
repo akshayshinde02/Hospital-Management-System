@@ -1,0 +1,48 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: hospital-gateway
+
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: patient-service
+              uri: lb://PATIENT-SERVICE
+              predicates:
+                - Path=/patient/**
+
+            - id: doctor-service
+              uri: lb://DOCTOR-SERVICE
+              predicates:
+                - Path=/doctor/**
+
+            - id: appointment-service
+              uri: lb://APPOINTMENT-SERVICE
+              predicates:
+                - Path=/appointment/**
+
+            - id: prescription-service
+              uri: lb://PRESCRIPTION-SERVICE
+              predicates:
+                - Path=/prescription/**
+
+            - id: user-service
+              uri: lb://USER-REGISTRATION-SERVICE
+              predicates:
+                - Path=/auth/**
+
+            - id: billing-service
+              uri: lb://BILLING-SERVICE
+              predicates:
+                - Path=/billing/**
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8070/eureka/
